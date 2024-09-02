@@ -1,11 +1,11 @@
 <template>
     <div class="py-5 row">
         <div class="col-md-2">
-            <p class="text-white">2023</p>
+            <p class="text-white">{{ data.created_at }}</p>
         </div>
         <div class="col-md-4">
-            <h3 class="text-white">Název</h3>
-            <p class="text-white">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas fermentum, sem in pharetra pellentesque, velit turpis volutpat ante, in pharetra metus odio a lectus.</p>
+            <h3 class="text-white">{{ data.name }}</h3>
+            <p class="text-white">{{ data.description }}</p>
             <button @click="projectDetail">Dozvědět se více</button>
         </div>
         <div class="col-md-4">
@@ -16,10 +16,17 @@
 
 <script>
 export default{
+    props: {
+        data: {
+            type: Object,
+            required: true,
+        }
+    },
     methods: {
         projectDetail() {
-            this.$router.push({name: 'project'});
+            this.$router.push({name: 'project', params: { data: this.data.name }});
         }
-    }
+    },
+
 }
 </script>

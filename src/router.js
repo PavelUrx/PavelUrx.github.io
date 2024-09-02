@@ -9,7 +9,7 @@ const routes = [
         component: DefaultView
     },
     {
-        path: '/project',
+        path: '/project/:data',
         name: 'project',
         component: ProjectView
     }

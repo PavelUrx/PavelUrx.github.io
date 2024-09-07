@@ -1,11 +1,10 @@
 <template>
-    <div class="bg-dark p-5">
-        <div class="container-sm bg-primary p-5">
+    <div class="p-5 wrapper vh-100" id="scene">
+        <div class="container bg-primary p-5 opacity-75">
             <h1 class="text-center fw-bold display-2 text-white">PAVEL URX</h1>
             <h2 class="text-center text-secondary">Software engineer</h2>
             <p class="text-white py-5 ">
-                Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas fermentum, sem in pharetra pellentesque, velit turpis volutpat ante, in pharetra metus odio a lectus. Donec ipsum massa, ullamcorper in, auctor et, scelerisque sed, est. Curabitur sagittis hendrerit ante. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur ligula sapien, pulvinar a vestibulum quis, facilisis vel sapien. Vestibulum fermentum tortor id mi. Fusce consectetuer risus a nunc. Pellentesque sapien. 
-            </p>
+                Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas fermentum, sem in pharetra pellentesque, velit turpis volutpat ante, in pharetra metus odio a lectus.            </p>
         </div>
     </div>
     <TimelineComponent>
@@ -14,10 +13,29 @@
 
 <script>
 import TimelineComponent from '../components/TimelineComponent.vue'
+import HomeScene from '../others/home_scene.js';
 
 export default {
     components: {
         TimelineComponent
+    },
+    mounted() {
+        const homeScene = new HomeScene('scene');
+        homeScene.start();
     }
 }
+
 </script>
+
+<style>
+.wrapper {
+    position: relative;
+}
+
+.three-scene {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+</style>

@@ -3,12 +3,12 @@
         <div class="container-sm p-5">
             <h2 class="text-center display-2 text-white">Časová osa</h2>
             <div>
-                <div v-if="repositories">
-                <TimelineContentComponent 
-                    v-for="repo in repositories" 
-                    :key="repo.id" 
-                    :data="repo" 
-                />
+                <div v-if="repositories.length > 0">
+                    <TimelineContentComponent 
+                        v-for="repo in repositories" 
+                        :key="repo.name" 
+                        :data="repo" 
+                    />
                 </div>
                 <div v-else>Loading...</div>
             </div>
@@ -18,22 +18,21 @@
 
 <script>
 import TimelineContentComponent from './TimelineContentComponent.vue';
-import getRepositories from '@/helpers/timeline_helper';
+import TimelineController from '@/controllers/timeline_controller';
 
-export default{
-    data(){
+export default {
+    data() {
         return {
-            repositories: null,
+            repositories: [],
         }
     },
     components: {
         TimelineContentComponent
     },
     async mounted() {
-        this.repositories = await getRepositories();
+        const timelineController = new TimelineController();
+        await timelineController.loadRepositories();
+        this.repositories = timelineController.getTimelineContent();
     }
 }
-
-//TODO load from github???
-//TODO filtrování contentu
 </script>

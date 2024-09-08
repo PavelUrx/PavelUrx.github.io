@@ -26,10 +26,17 @@ class HomeScene {
 
         this.scene.add(this.cube);
 
+
         this.camera.position.z = 5;
         this.animate = this.animate.bind(this);
 
         this.renderer.domElement.classList.add('three-scene');
+
+        window.addEventListener('resize', () => {
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.updateProjectionMatrix();
+        });
     }
 
     animate() {

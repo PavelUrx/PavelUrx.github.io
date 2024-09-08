@@ -30,8 +30,10 @@ export default {
         TimelineContentComponent
     },
     async mounted() {
-        const timelineController = new TimelineController();
-        await timelineController.loadRepositories();
+        var timelineController = new TimelineController();
+        await timelineController.fetchRepositories();
+        await timelineController.fetchEducation();
+        timelineController.orderByStart();
         this.repositories = timelineController.getTimelineContent();
     }
 }

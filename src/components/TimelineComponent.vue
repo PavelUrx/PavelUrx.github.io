@@ -3,9 +3,8 @@
         <div class="container-sm p-5">
             <h2 class="text-center display-2 text-white">Časová osa</h2>
             
-            <div class="row">
-                <p>Nastavení osy</p>
-                
+            <div class="row rounded p-2 border">
+                <p class="text-white">Nastavení osy</p>
                 <div class="d-flex justify-content-between py-1">
                     <button @click="toggleSortOrder" class="btn btn-sm btn-secondary">
                         {{ sortOrder === 'asc' ? 'Sort Ascending' : 'Sort Descending' }}
@@ -15,17 +14,17 @@
                 <div class="d-flex justify-content-between">
                     <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="displayEdu" v-model="displayEducation" :class="{ 'bg-secondary': displayEducation }">
-                    <label class="form-check-label" for="displayEdu">Vzdělání</label>
+                    <label class="form-check-label text-white" for="displayEdu"><small>Vzdělání</small></label>
                     </div>
 
                     <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="displayRepos" v-model="displayRepos" :class="{ 'bg-secondary': displayRepos }">
-                    <label class="form-check-label" for="displayRepos">GitHub repozitáře</label>
+                    <label class="form-check-label text-white" for="displayRepos"><small>GitHub repozitáře</small></label>
                     </div>
 
                     <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="displayOtherProjects" v-model="displayOtherProjects" :class="{ 'bg-secondary': displayOtherProjects }">
-                    <label class="form-check-label" for="displayOtherProjects">Ostatní projekty</label>
+                    <label class="form-check-label text-white" for="displayOtherProjects"><small>Ostatní projekty</small></label>
                     </div>
                 </div>
 

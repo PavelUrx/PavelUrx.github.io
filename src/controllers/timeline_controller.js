@@ -33,11 +33,19 @@ class TimelineController {
         }
     }
 
-    orderByStart() {
+    orderDesc() {
         this.timelineContent = this.timelineContent.sort((a, b) => {
             const dateA = new Date(a.start);
             const dateB = new Date(b.start);
             return dateB - dateA;
+        })
+    }
+
+    orderAsc() {
+        this.timelineContent = this.timelineContent.sort((a, b) => {
+            const dateA = new Date(a.start);
+            const dateB = new Date(b.start);
+            return dateA - dateB;
         })
     }
 

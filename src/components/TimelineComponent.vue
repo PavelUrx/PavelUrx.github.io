@@ -56,6 +56,7 @@ export default {
             displayRepos: true,
             displayOtherProjects: true,
             sortOrder: 'desc',
+            timelineController: null,
         }
     },
     components: {
@@ -65,7 +66,7 @@ export default {
         var timelineController = new TimelineController();
         await timelineController.fetchRepositories();
         await timelineController.fetchEducation();
-        timelineController.orderByStart();
+        timelineController.orderDesc();
         this.repositories = timelineController.getTimelineContent();
     },
     methods: {

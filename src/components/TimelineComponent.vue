@@ -7,18 +7,18 @@
                 <p class="text-white">Nastavení osy</p>
                 <div class="d-flex justify-content-between py-1">
                     <button @click="toggleSortOrder" class="btn btn-sm btn-secondary">
-                        {{ sortOrder === 'asc' ? 'Sort Ascending' : 'Sort Descending' }}
+                        {{ getTimelineOrdering === 'asc' ? 'Sort Ascending' : 'Sort Descending' }}
                     </button>
                 </div>
  
                 <div class="d-flex justify-content-between">
                     <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="displayEdu" v-model="displayEducation" :class="{ 'bg-secondary': displayEducation }">
+                    <input class="form-check-input" type="checkbox" role="switch" id="displayEdu" v-model="displayEducation" @change="toggleFilter('display_education')" :class="{ 'bg-secondary': displayEducation }">
                     <label class="form-check-label text-white" for="displayEdu"><small>Vzdělání</small></label>
                     </div>
 
                     <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="displayRepos" v-model="displayRepos" :class="{ 'bg-secondary': displayRepos }">
+                    <input class="form-check-input" type="checkbox" role="switch" id="displayRepos" v-model="displayRepos" @change="toggleFilter('display_repositories')" :class="{ 'bg-secondary': displayRepos }">
                     <label class="form-check-label text-white" for="displayRepos"><small>GitHub repozitáře</small></label>
                     </div>
 
@@ -31,9 +31,9 @@
             </div>
 
             <div>
-                <div v-if="repositories.length > 0">
+                <div v-if="getTimelineContent.length > 0">
                     <TimelineContentComponent  
-                        v-for="repo in repositories" 
+                        v-for="repo in getTimelineContent"
                         :key="repo.name" 
                         :data="repo" 
                     />
@@ -45,17 +45,17 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import TimelineContentComponent from './TimelineContentComponent.vue';
 import TimelineController from '@/controllers/timeline_controller';
 
 export default {
     data() {
         return {
-            repositories: [],
+            timelineContent: [],
             displayEducation: true,
             displayRepos: true,
             displayOtherProjects: true,
-            sortOrder: 'desc',
             timelineController: null,
         }
     },
@@ -67,12 +67,21 @@ export default {
         await timelineController.fetchRepositories();
         await timelineController.fetchEducation();
         timelineController.orderDesc();
-        this.repositories = timelineController.getTimelineContent();
+        this.timelineContent = timelineController.getTimelineContent();
+        this.$store.dispatch('updateTimelineContent', this.timelineContent);
     },
     methods: {
         toggleSortOrder() {
-            this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+            this.$store.dispatch('changeTimelineOrdering');
+        },
+        toggleFilter(filterType) {
+            this.$store.dispatch('toggleDisplayFilter', filterType);
         }
+    },
+    computed: {
+        ...mapGetters(
+            ['getTimelineOrdering','getDisplayEducation', 'getDisplayRepositories', 'getDisplayOthers', 'getTimelineContent']
+        ),
     }
 }
 </script>

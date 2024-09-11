@@ -1,6 +1,6 @@
 import axios from 'axios';
 import GitHubTimelineModel from '@/models/timeline_github_model';
-import EducationTimelineModel from '@/models/timeline_edu_model';
+import TimelineEducationModel from '@/models/timeline_edu_model';
 
 class TimelineController {
     constructor() {
@@ -26,7 +26,7 @@ class TimelineController {
             const schools = response.data.schools;
             this.timelineContent.push(
                 ...schools.map(school =>
-                    new EducationTimelineModel(school.name, school.description, school.start, school.end, 'school.field')
+                    new TimelineEducationModel(school.name, school.description, school.start, school.end, 'school.field')
                 ));
         } catch (error) {
             console.error('Error fetching education data:', error);

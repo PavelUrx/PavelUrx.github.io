@@ -7,7 +7,7 @@ export const formatDate = (rawDate) => {
     return `${year}-${month}`;
 }
 
-export const formatProjectName = (rawName) => {
+export const formatProjectName = (rawName = 'Unknown') => {
     var find = '-';
     var re = new RegExp(find, 'g');
     return rawName.replace(re, ' ');

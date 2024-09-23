@@ -8,7 +8,21 @@ $primary: #5D7960;
 $secondary: #FA9500;
 $font-family-base: 'Michroma', sans-serif;
 
+@mixin bg-opacity-utilities($opacity-values) {
+    @each $opacity, $value in $opacity-values {
+        .bg-opacity-#{$opacity} {
+            --bs-bg-opacity: $value;
+        }
+    }
+}
 
+$opacity-values: (
+    25: 0.25,
+    50: 0.5,
+    75: 0.75
+);
+
+@include bg-opacity-utilities($opacity-values);
 
 @import "~bootstrap/scss/variables";
 

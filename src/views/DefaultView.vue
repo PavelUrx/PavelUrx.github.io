@@ -1,6 +1,6 @@
 <template>
     <div class="p-5 wrapper vh-100" id="scene">
-        <div class="container bg-primary p-5 opacity-75">
+        <div class="container bg-primary p-5 bg-opacity-50">
             <h1 class="text-center fw-bold display-2 text-white">PAVEL URX</h1>
             <h2 class="text-center text-secondary">Software engineer</h2>
             <p class="text-white py-5 ">

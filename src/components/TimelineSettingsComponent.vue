@@ -1,6 +1,6 @@
 <template>
 
-    <div class="row py-2 bg-black">
+    <div class="row py-2 bg-black bg-opacity-50">
         <div class="d-flex justify-content-between py-1">
             <button @click="toggleSortOrder" class="btn btn-sm btn-secondary">
                 {{ getTimelineOrdering === 'asc' ? 'Sort Ascending' : 'Sort Descending' }}
@@ -52,3 +52,9 @@ export default {
     }
 }
 </script>
+
+<style>
+semi-transparent {
+    opacity: 0.5;
+}
+</style>

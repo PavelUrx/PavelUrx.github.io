@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Michroma&family=Righteous&display=swap');
+@import "~bootstrap-icons/font/bootstrap-icons.css";
 
 
 @import "~bootstrap/scss/functions";
@@ -52,6 +53,13 @@ $opacity-values: (
 .right {
     right: 0;
     border-right: 10px solid;
+}
+
+.floating {
+    position: sticky;
+    display: flex;
+    justify-content: flex-end;
+    bottom: 0px;
 }
 
 @include bg-opacity-utilities($opacity-values);

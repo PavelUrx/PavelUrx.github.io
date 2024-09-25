@@ -28,9 +28,10 @@
         </div>
 
     </div>
-    <div class="text-center">
-        <button @click="back">Zpět</button>
+    <div class="floating p-4">
+        <button @click="back" class="btn btn-lg btn-secondary"><i class="bi bi-arrow-left"></i></button>
     </div>
+
 </template>
 
 <script>

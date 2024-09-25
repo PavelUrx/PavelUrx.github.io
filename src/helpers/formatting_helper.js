@@ -12,3 +12,7 @@ export const formatProjectName = (rawName = 'Unknown') => {
     var re = new RegExp(find, 'g');
     return rawName.replace(re, ' ');
 }
+
+export const formatToUppercase = (rawText) => {
+    return rawText.toUpperCase();
+}

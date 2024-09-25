@@ -9,18 +9,18 @@
 
         <div class="d-flex justify-content-between">
             <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" role="switch" id="displayEdu" v-model="displayEducation" @change="toggleFilter('display_education')" :class="{ 'bg-secondary': displayEducation }">
-            <label class="form-check-label text-white" for="displayEdu"><small>Vzdělání</small></label>
+                <input class="form-check-input" type="checkbox" role="switch" id="displayEdu" v-model="displayEducation" @change="toggleFilter('display_education')" :class="{ 'bg-secondary': displayEducation }">
+                <label class="form-check-label text-white" for="displayEdu"><small>Vzdělání</small></label>
             </div>
 
             <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" role="switch" id="displayRepos" v-model="displayRepos" @change="toggleFilter('display_repositories')" :class="{ 'bg-secondary': displayRepos }">
-            <label class="form-check-label text-white" for="displayRepos"><small>GitHub repozitáře</small></label>
+                <input class="form-check-input" type="checkbox" role="switch" id="displayRepos" v-model="displayRepos" @change="toggleFilter('display_repositories')" :class="{ 'bg-secondary': displayRepos }">
+                <label class="form-check-label text-white" for="displayRepos"><small>GitHub repozitáře</small></label>
             </div>
 
             <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" role="switch" id="displayOtherProjects" v-model="displayOtherProjects" :class="{ 'bg-secondary': displayOtherProjects }">
-            <label class="form-check-label text-white" for="displayOtherProjects"><small>Ostatní projekty</small></label>
+                <input class="form-check-input" type="checkbox" role="switch" id="displayOtherProjects" v-model="displayOtherProjects" :class="{ 'bg-secondary': displayOtherProjects }">
+                <label class="form-check-label text-white" for="displayOtherProjects"><small>Ostatní projekty</small></label>
             </div>
         </div>
     </div>

@@ -17,8 +17,9 @@
                 <button @click="projectDetail" type="button" class="btn btn-lg btn-secondary">Dozvědět se více</button>
             </div>
         </div>
-        <div class="col-lg-2 col-md-12 col-sm-12 text-center py-5">
-            <img class="img-fluid" src="../assets/github-mark.svg"/>
+        <div class="col-lg-2 col-md-12 col-sm-12 text-center timeline-icon">
+            <i v-if="content_type == 'TimelineGithubModel'" class="bi bi-github py-5"></i>
+            <i v-if="content_type == 'TimelineEducationModel'" class="bi bi bi-mortarboard-fill py-5"></i>
         </div>
     </div>
 </template>
@@ -33,6 +34,10 @@ export default{
         data: {
             type: Object,
             required: true,
+        },
+        content_type: {
+            type: String,
+            required: true
         }
     },
     methods: {

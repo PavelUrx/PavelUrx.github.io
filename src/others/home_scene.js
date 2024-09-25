@@ -25,7 +25,7 @@ class HomeScene {
             uniforms: {
                 heightMap: { value: this.heightMap },
                 contourLevel: { value: 0.9 },
-                contourThickness: { value: 0.15 }
+                contourThickness: { value: 0.08 }
             },
             vertexShader: `
                 varying vec2 vUv;

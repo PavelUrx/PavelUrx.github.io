@@ -10,10 +10,11 @@
                     <TimelineContentComponent  
                         v-for="repo in getTimelineContent"
                         :key="repo.name" 
-                        :data="repo" 
+                        :data="repo"
+                        :content_type="repo.__type"
                     />
                 </div>
-                <div v-else>Loading...</div>
+                <div v-else class="text-center text-white py-5">THERE IS NOTHING TO SHOW ON TIMELINE</div>
             </div>
 
         </div>

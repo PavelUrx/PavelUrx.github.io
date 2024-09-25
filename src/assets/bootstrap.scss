@@ -62,6 +62,10 @@ $opacity-values: (
     bottom: 0px;
 }
 
+.timeline-icon {
+    font-size: 8rem;
+}
+
 @include bg-opacity-utilities($opacity-values);
 
 @import "~bootstrap/scss/variables";

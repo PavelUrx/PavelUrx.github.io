@@ -1,0 +1,12 @@
+[
+  {
+    "id": "edu-degree-placeholder",
+    "kind": "education",
+    "start": "2016-09",
+    "end": "2020-06",
+    "title": "[Titul nebo program]",
+    "context": "[Univerzita nebo škola]",
+    "summary": "[Zaměření, diplomka, významný předmět — jedna věta na kartu.]",
+    "details": "Nahraďte svým příběhem: oblíbené předměty, téma diplomky nebo závěrečné práce, spolky, výměnné pobyty, známky pokud chcete.\n\nDruhý odstavec: co vám program přinesl a jak se to projevuje v práci dnes."
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "items": [
+    { "label": "TypeScript, Node, HTTP API", "areas": ["backend", "frontend"] },
+    { "label": "Vue, Vite, responzivní UI", "areas": ["frontend"] },
+    { "label": "WebSockety, TCP/IP, real-time synchronizace", "areas": ["networking", "backend"] },
+    { "label": "Docker, CI/CD, nasazení do cloudu", "areas": ["devops", "backend"] },
+    { "label": "PostgreSQL, dotazy, migrace", "areas": ["data", "backend"] },
+    { "label": "Rust / služby blízké systémům", "areas": ["backend"] },
+    { "label": "Design systémy, přístupnost, UX detaily", "areas": ["frontend"] },
+    { "label": "Metriky, logy, spolehlivost", "areas": ["devops", "data"] }
+  ]
+}

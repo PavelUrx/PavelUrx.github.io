@@ -1,15 +1,18 @@
+<script setup lang="ts">
+import { RouterView } from 'vue-router'
+</script>
+
 <template>
-  <RouterView/>
-  <FooterComponent></FooterComponent>
+  <div class="shell">
+    <RouterView />
+  </div>
 </template>
 
-<script>
-import FooterComponent from './components/FooterComponent.vue';
-
-export default {
-  name: 'App',
-  components: {
-    FooterComponent
-  }
+<style scoped>
+.shell {
+  min-height: 100%;
+  min-height: 100dvh;
+  min-height: 0;
+  overflow-x: hidden;
 }
-</script>
+</style>

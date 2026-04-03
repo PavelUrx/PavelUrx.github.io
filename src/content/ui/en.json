@@ -1,0 +1,83 @@
+{
+  "hero": {
+    "ariaIntroduction": "Introduction",
+    "name": "Pavel Urx",
+    "role": "[Your role — e.g. Full-stack developer]",
+    "tagline": "[One line: what you build, who you help, or the problems you like solving.]",
+    "scrollDown": "Scroll to content below"
+  },
+  "about": {
+    "heading": "About",
+    "body": "[2–3 sentences: background, what you care about in engineering or design, and what you’re looking for next — clients, collaborators, or a full-time role.]"
+  },
+  "timeline": {
+    "heading": "Timeline",
+    "hint": "Narrow by category — leave all off to show everything.",
+    "filters": {
+      "github": "GitHub projects",
+      "education": "Education",
+      "employment": "Jobs",
+      "contract": "Contracts / entrepreneur"
+    },
+    "scaleTitle": "Temporal scale",
+    "scaleUnit": "years · newest ↑",
+    "empty": "No entries for this filter. Toggle a category or clear filters.",
+    "present": "Present",
+    "openDetails": "Read full details",
+    "modalClose": "Close",
+    "yearSuffix": "yr"
+  },
+  "focus": {
+    "heading": "Focus",
+    "hint": "Narrow by area — leave all off to show everything.",
+    "filters": {
+      "backend": "Back-end",
+      "frontend": "Front-end",
+      "networking": "Networking",
+      "devops": "DevOps & infra",
+      "data": "Data"
+    },
+    "empty": "No skills match this filter. Turn off a category to see more.",
+    "skillsAria": "Skills and technologies"
+  },
+  "contact": {
+    "heading": "Contact",
+    "email": "Email",
+    "github": "GitHub",
+    "linkedin": "LinkedIn",
+    "location": "Location"
+  },
+  "contactValues": {
+    "email": "[you@example.com]",
+    "github": "[github.com/yourusername]",
+    "linkedin": "[linkedin.com/in/yourprofile]",
+    "location": "[City, country — or Remote / Hybrid]"
+  },
+  "backdrop": {
+    "pause": "Pause",
+    "play": "Play",
+    "hint": "animation",
+    "ariaPause": "Pause animated background",
+    "ariaResume": "Resume animated background"
+  },
+  "lang": {
+    "enLabel": "English",
+    "csLabel": "Čeština",
+    "ariaSwitcher": "Language"
+  },
+  "hr": {
+    "toggleAria": "HR options",
+    "panelTitle": "HR options",
+    "cvLanguage": "CV language",
+    "printerFriendly": "Printer-friendly",
+    "printerFriendlyHint": "Black text and minimal styling to save ink and toner.",
+    "exportCv": "Export / print PDF",
+    "exportAria": "Open CV in a new tab to print or save as PDF"
+  },
+  "cv": {
+    "documentTitleSuffix": "CV",
+    "backToSite": "Back to site",
+    "printOrSavePdf": "Print / Save as PDF",
+    "screenIntro": "Use your browser’s print dialog and choose “Save as PDF” if you want a file."
+  }
+}

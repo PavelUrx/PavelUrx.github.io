@@ -1,0 +1,52 @@
+:root {
+  --font-display: 'Michroma', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Segoe UI Mono', monospace;
+
+  /* Cyberpunk neons — electric blue, hot pink, violet, fuchsia accent */
+  --neo-blue: rgb(12, 235, 255);
+  --neo-pink: rgb(255, 64, 208);
+  --neo-violet: rgb(176, 102, 255);
+  --neo-fuchsia: rgb(255, 38, 170);
+
+  /* Aliases (same hues, for names used elsewhere) */
+  --neo-cyan: var(--neo-blue);
+  --neo-magenta: var(--neo-pink);
+
+  --void-deep: #050514;
+  --void-mid: #0a0c1c;
+  --void-panel: #0d1024;
+
+  --color-background: radial-gradient(
+    ellipse 130% 100% at 50% -15%,
+    #14182e 0%,
+    var(--void-mid) 42%,
+    var(--void-deep) 100%
+  );
+  --color-background-solid: var(--void-deep);
+
+  --color-heading: #eef6ff;
+  --color-text-muted: rgba(175, 200, 255, 0.52);
+  --color-accent-line: var(--neo-blue);
+  --color-glow-blue: rgba(12, 235, 255, 0.16);
+  --color-glow-pink: rgba(255, 64, 208, 0.1);
+  --color-glow-violet: rgba(176, 102, 255, 0.12);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  color: var(--color-heading);
+  background: var(--color-background-solid);
+  background-image: var(--color-background);
+  background-attachment: fixed;
+  line-height: 1.5;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

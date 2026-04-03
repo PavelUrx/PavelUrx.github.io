@@ -1,0 +1,12 @@
+{
+  "items": [
+    { "label": "TypeScript, Node, HTTP APIs", "areas": ["backend", "frontend"] },
+    { "label": "Vue, Vite, responsive UI", "areas": ["frontend"] },
+    { "label": "WebSockets, TCP/IP, real-time sync", "areas": ["networking", "backend"] },
+    { "label": "Docker, CI/CD, cloud deploy", "areas": ["devops", "backend"] },
+    { "label": "PostgreSQL, querying, migrations", "areas": ["data", "backend"] },
+    { "label": "Rust / systems-leaning services", "areas": ["backend"] },
+    { "label": "Design systems, a11y, UX polish", "areas": ["frontend"] },
+    { "label": "Metrics, logs, reliability", "areas": ["devops", "data"] }
+  ]
+}

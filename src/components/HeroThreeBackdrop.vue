@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { Color, InstancedMesh, SpotLight } from 'three'
 
 const host = ref<HTMLElement | null>(null)
+
+/** User toggle: stop the render loop (saves GPU); distinct from prefers-reduced-motion. */
+const backdropPaused = ref(false)
 
 type THREE_Module = typeof import('three')
 
@@ -286,6 +289,7 @@ onMounted(() => {
     ro.observe(mountEl)
 
     let raf = 0
+    let stopPauseWatch: (() => void) | undefined
 
     const renderFrame = () => {
       const dt = Math.min(clock.getDelta(), 0.05)
@@ -331,18 +335,37 @@ onMounted(() => {
 
     const startMotion = () => {
       cancelAnimationFrame(raf)
+      raf = 0
       if (reduceMotionMq.matches) {
         renderFrame()
         return
       }
+      if (backdropPaused.value) {
+        renderer.render(scene, camera)
+        return
+      }
       raf = requestAnimationFrame(loop)
     }
+
+    stopPauseWatch = watch(
+      backdropPaused,
+      () => {
+        cancelAnimationFrame(raf)
+        raf = 0
+        renderer.render(scene, camera)
+        if (!backdropPaused.value && !reduceMotionMq.matches) {
+          raf = requestAnimationFrame(loop)
+        }
+      },
+      { flush: 'sync' },
+    )
 
     reduceMotionMq.addEventListener('change', startMotion)
     clock.start()
     startMotion()
 
     teardown = () => {
+      stopPauseWatch?.()
       cancelAnimationFrame(raf)
       window.removeEventListener('pointermove', onPointerMove)
       reduceMotionMq.removeEventListener('change', startMotion)
@@ -368,11 +391,23 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="host" class="hero-canvas-host" aria-hidden="true" />
+  <div class="hero-backdrop-root">
+    <div ref="host" class="hero-canvas-host" aria-hidden="true" />
+    <button
+      type="button"
+      class="backdrop-pause-btn"
+      :aria-pressed="backdropPaused"
+      :aria-label="backdropPaused ? 'Resume animated background' : 'Pause animated background'"
+      @click="backdropPaused = !backdropPaused"
+    >
+      <span class="backdrop-pause-btn__text" aria-hidden="true">{{ backdropPaused ? 'Play' : 'Pause' }}</span>
+      <span class="backdrop-pause-btn__hint">animation</span>
+    </button>
+  </div>
 </template>
 
 <style scoped>
-.hero-canvas-host {
+.hero-backdrop-root {
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -380,9 +415,73 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
+.hero-canvas-host {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
 .hero-canvas-host :deep(canvas) {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.backdrop-pause-btn {
+  position: absolute;
+  right: clamp(0.65rem, 3vmin, 1.1rem);
+  bottom: clamp(0.65rem, 3vmin, 1.1rem);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.06rem;
+  margin: 0;
+  padding: 0.4rem 0.55rem 0.38rem;
+  font-family: var(--font-mono);
+  line-height: 1.1;
+  color: rgba(210, 225, 255, 0.88);
+  background: rgba(5, 8, 22, 0.72);
+  border: 1px solid rgba(12, 235, 255, 0.28);
+  border-radius: 6px;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow:
+    0 4px 18px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.backdrop-pause-btn:hover {
+  border-color: rgba(12, 235, 255, 0.45);
+  color: rgba(248, 250, 255, 0.96);
+}
+
+.backdrop-pause-btn:focus-visible {
+  outline: 2px solid rgba(12, 235, 255, 0.55);
+  outline-offset: 2px;
+}
+
+.backdrop-pause-btn[aria-pressed='true'] {
+  border-color: rgba(176, 102, 255, 0.45);
+  background: rgba(176, 102, 255, 0.1);
+}
+
+.backdrop-pause-btn__text {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.backdrop-pause-btn__hint {
+  font-size: 0.52rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.55;
 }
 </style>

@@ -1,0 +1,24 @@
+[
+  {
+    "id": "job-current-placeholder",
+    "kind": "employment",
+    "start": "2024-03",
+    "end": null,
+    "title": "[Current role title]",
+    "context": "[Company · Location or remote]",
+    "summary": "[What you ship, stack, team size, or domain — one or two lines.]",
+    "details": "Optional: team structure, notable releases, metrics you are proud of, tools you use daily.\n\nKeep it honest and concise; you can mirror your CV or LinkedIn with more colour."
+
+  },
+  {
+    "id": "job-previous-placeholder",
+    "kind": "employment",
+    "start": "2020-09",
+    "end": "2022-05",
+    "title": "[Previous job title]",
+    "context": "[Company]",
+    "summary": "[Responsibilities, impact line — placeholder.]",
+    "details": "What you owned end-to-end, promotions, lessons learned, why you moved on (optional)."
+
+  }
+]

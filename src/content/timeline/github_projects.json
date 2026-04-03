@@ -1,0 +1,26 @@
+[
+  {
+    "id": "gh-os-current-placeholder",
+    "kind": "github",
+    "start": "2023-01",
+    "end": null,
+    "title": "[Open source or public repo name]",
+    "context": "GitHub",
+    "summary": "[Problem, tech, stars/users if it helps — placeholder.]",
+    "href": "https://github.com/[you]/[repo]",
+    "details": "Motivation for the project, architecture notes, how others use it, roadmap.\n\nLink above stays on the title; this block is for narrative."
+
+  },
+  {
+    "id": "gh-older-placeholder",
+    "kind": "github",
+    "start": "2019-03",
+    "end": "2021-11",
+    "title": "[Older public project]",
+    "context": "GitHub",
+    "summary": "[Short description — placeholder.]",
+    "href": "https://github.com/[you]/[repo]",
+    "details": "What you would improve with hindsight; stack choices; maintenance status."
+
+  }
+]

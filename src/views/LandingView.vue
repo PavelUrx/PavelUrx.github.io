@@ -1,82 +1,15 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import HeroThreeBackdrop from '../components/HeroThreeBackdrop.vue'
-
-/** Edit this union when you add categories. */
-type TimelineKind = 'github' | 'education' | 'employment' | 'contract'
-
-type TimelineEntry = {
-  kind: TimelineKind
-  /** Start month `YYYY-MM` (sorting / display). */
-  start: string
-  /** End `YYYY-MM`, or `null` if ongoing. */
-  end: string | null
-  title: string
-  /** Company, school, client, or repository context. */
-  context: string
-  summary: string
-  href?: string
-}
+import { FOCUS_ITEMS } from '@/content/focusItems'
+import { TIMELINE_ENTRIES } from '@/content/timelineEntries'
+import type { FocusArea, TimelineEntry, TimelineKind } from '@/content/types'
 
 const TIMELINE_FILTERS: { kind: TimelineKind; label: string }[] = [
   { kind: 'github', label: 'GitHub projects' },
   { kind: 'education', label: 'Education' },
   { kind: 'employment', label: 'Jobs' },
   { kind: 'contract', label: 'Contracts / entrepreneur' },
-]
-
-/** Placeholder rows — replace with your history (keep `YYYY-MM` dates for sorting). */
-const TIMELINE_ENTRIES: TimelineEntry[] = [
-  {
-    kind: 'employment',
-    start: '2024-03',
-    end: null,
-    title: '[Current role title]',
-    context: '[Company · Location or remote]',
-    summary: '[What you ship, stack, team size, or domain — one or two lines.]',
-  },
-  {
-    kind: 'github',
-    start: '2023-01',
-    end: null,
-    title: '[Open source or public repo name]',
-    context: 'GitHub',
-    summary: '[Problem, tech, stars/users if it helps — placeholder.]',
-    href: 'https://github.com/[you]/[repo]',
-  },
-  {
-    kind: 'contract',
-    start: '2022-06',
-    end: '2024-02',
-    title: '[Client or product] — freelance',
-    context: '[Your business or “Independent”]',
-    summary: '[Engagement type, outcome, technologies.]',
-  },
-  {
-    kind: 'employment',
-    start: '2020-09',
-    end: '2022-05',
-    title: '[Previous job title]',
-    context: '[Company]',
-    summary: '[Responsibilities, impact line — placeholder.]',
-  },
-  {
-    kind: 'education',
-    start: '2016-09',
-    end: '2020-06',
-    title: '[Degree or programme]',
-    context: '[University or school]',
-    summary: '[Focus, thesis, notable course — placeholder.]',
-  },
-  {
-    kind: 'github',
-    start: '2019-03',
-    end: '2021-11',
-    title: '[Older public project]',
-    context: 'GitHub',
-    summary: '[Short description — placeholder.]',
-    href: 'https://github.com/[you]/[repo]',
-  },
 ]
 
 function parseMonth(s: string): number {
@@ -107,33 +40,12 @@ function bucketYear(e: TimelineEntry): number {
   return new Date().getFullYear()
 }
 
-/** Focus / skills — edit areas when you add domains. */
-type FocusArea = 'backend' | 'frontend' | 'networking' | 'devops' | 'data'
-
-type FocusItem = {
-  /** One line shown in the pill. */
-  label: string
-  /** Item matches if any tag intersects the active filter set (when filters are on). */
-  areas: FocusArea[]
-}
-
 const FOCUS_FILTERS: { area: FocusArea; label: string }[] = [
   { area: 'backend', label: 'Back-end' },
   { area: 'frontend', label: 'Front-end' },
   { area: 'networking', label: 'Networking' },
   { area: 'devops', label: 'DevOps & infra' },
   { area: 'data', label: 'Data' },
-]
-
-const FOCUS_ITEMS: FocusItem[] = [
-  { label: 'TypeScript, Node, HTTP APIs', areas: ['backend', 'frontend'] },
-  { label: 'Vue, Vite, responsive UI', areas: ['frontend'] },
-  { label: 'WebSockets, TCP/IP, real-time sync', areas: ['networking', 'backend'] },
-  { label: 'Docker, CI/CD, cloud deploy', areas: ['devops', 'backend'] },
-  { label: 'PostgreSQL, querying, migrations', areas: ['data', 'backend'] },
-  { label: 'Rust / systems-leaning services', areas: ['backend'] },
-  { label: 'Design systems, a11y, UX polish', areas: ['frontend'] },
-  { label: 'Metrics, logs, reliability', areas: ['devops', 'data'] },
 ]
 
 /** When empty, every kind is shown; otherwise OR across selected kinds. */
@@ -358,7 +270,7 @@ onBeforeUnmount(() => {
                 <ul class="timeline-card-list">
                   <li
                     v-for="(entry, j) in cluster.entries"
-                    :key="`${entry.kind}-${entry.start}-${entry.title}`"
+                    :key="entry.id"
                     class="timeline-card"
                     :data-kind="entry.kind"
                     :style="{ '--stagger': j }"
@@ -382,6 +294,14 @@ onBeforeUnmount(() => {
                       </h3>
                       <p class="timeline-card-context">{{ entry.context }}</p>
                       <p class="timeline-card-summary">{{ entry.summary }}</p>
+
+                      <details
+                        v-if="entry.details"
+                        class="timeline-card-details"
+                      >
+                        <summary class="timeline-card-details-toggle">More detail</summary>
+                        <div class="timeline-card-details-body">{{ entry.details }}</div>
+                      </details>
                     </div>
                   </li>
                 </ul>
@@ -1174,6 +1094,56 @@ onBeforeUnmount(() => {
   line-height: 1.58;
   color: rgba(200, 218, 255, 0.82);
   text-shadow: 0 1px 10px rgba(5, 5, 20, 0.7);
+}
+
+.timeline-card-details {
+  margin-top: 0.65rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid color-mix(in srgb, var(--card-accent) 18%, rgba(12, 235, 255, 0.08));
+}
+
+.timeline-card-details-toggle {
+  position: relative;
+  cursor: pointer;
+  padding-left: 1.05rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--card-accent) 50%, rgba(210, 225, 255, 0.85));
+  list-style: none;
+}
+
+.timeline-card-details-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.timeline-card-details-toggle::marker {
+  content: '';
+}
+
+.timeline-card-details-toggle::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  top: 0.05em;
+  opacity: 0.7;
+  transition: transform 0.2s ease;
+}
+
+.timeline-card-details[open] .timeline-card-details-toggle::before {
+  transform: rotate(90deg);
+}
+
+.timeline-card-details-body {
+  margin: 0.55rem 0 0;
+  padding-left: 0.15rem;
+  font-size: 0.82rem;
+  line-height: 1.62;
+  color: rgba(185, 205, 255, 0.82);
+  white-space: pre-wrap;
+  text-shadow: 0 1px 10px rgba(5, 5, 20, 0.65);
 }
 
 .timeline-link {

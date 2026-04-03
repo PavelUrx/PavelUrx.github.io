@@ -3,7 +3,8 @@
     "ariaIntroduction": "Úvod",
     "name": "Pavel Urx",
     "role": "[Vaše role — např. full-stack vývojář]",
-    "tagline": "[Jedna věta: co tvoříte, komu pomáháte nebo jaké problémy vás baví řešit.]"
+    "tagline": "[Jedna věta: co tvoříte, komu pomáháte nebo jaké problémy vás baví řešit.]",
+    "scrollDown": "Posunout k obsahu níže"
   },
   "about": {
     "heading": "O mně",

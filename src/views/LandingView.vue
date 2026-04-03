@@ -233,6 +233,13 @@ onBeforeUnmount(() => {
   document.body.style.overflow = ''
   disconnectTimelineObservers()
 })
+
+function scrollToMainContent() {
+  document.getElementById('site-content')?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start',
+  })
+}
 </script>
 
 <template>
@@ -285,9 +292,33 @@ onBeforeUnmount(() => {
       <p class="tagline">
         {{ ui.hero.tagline }}
       </p>
+      <button
+        type="button"
+        class="hero-scroll-cue"
+        :aria-label="ui.hero.scrollDown"
+        @click="scrollToMainContent"
+      >
+        <svg
+          class="hero-scroll-cue__icon"
+          viewBox="0 0 40 28"
+          width="40"
+          height="28"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path
+            d="M6 8 L20 22 L34 8"
+            stroke="currentColor"
+            stroke-width="2.25"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
     </section>
 
-    <div class="content">
+    <div id="site-content" class="content">
       <section class="block" aria-labelledby="about-heading">
         <h2 id="about-heading" class="block-heading">{{ ui.about.heading }}</h2>
         <p class="block-text">
@@ -617,6 +648,58 @@ onBeforeUnmount(() => {
 .hero .role,
 .hero .tagline {
   pointer-events: auto;
+}
+
+.hero-scroll-cue {
+  position: absolute;
+  left: 50%;
+  bottom: max(clamp(0.85rem, 4vh, 1.75rem), env(safe-area-inset-bottom, 0px));
+  z-index: 1;
+  margin: 0;
+  padding: 0.35rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: rgba(12, 235, 255, 0.78);
+  transform: translateX(-50%);
+  animation: hero-scroll-cue-pulse 2.4s ease-in-out infinite;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(12, 235, 255, 0.2);
+  pointer-events: auto;
+}
+
+.hero-scroll-cue:hover {
+  color: rgba(236, 248, 255, 0.95);
+}
+
+.hero-scroll-cue:focus-visible {
+  outline: 2px solid rgba(12, 235, 255, 0.55);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.hero-scroll-cue__icon {
+  display: block;
+}
+
+@keyframes hero-scroll-cue-pulse {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 0.88;
+  }
+  50% {
+    transform: translateX(-50%) translateY(9px);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-scroll-cue {
+    animation: none;
+    transform: translateX(-50%);
+    opacity: 0.92;
+  }
 }
 
 .content {

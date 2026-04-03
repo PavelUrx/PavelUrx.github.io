@@ -6,6 +6,7 @@ export type SiteUi = {
     name: string
     role: string
     tagline: string
+    scrollDown: string
   }
   about: {
     heading: string

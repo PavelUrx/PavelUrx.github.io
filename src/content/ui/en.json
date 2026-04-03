@@ -3,7 +3,8 @@
     "ariaIntroduction": "Introduction",
     "name": "Pavel Urx",
     "role": "[Your role — e.g. Full-stack developer]",
-    "tagline": "[One line: what you build, who you help, or the problems you like solving.]"
+    "tagline": "[One line: what you build, who you help, or the problems you like solving.]",
+    "scrollDown": "Scroll to content below"
   },
   "about": {
     "heading": "About",

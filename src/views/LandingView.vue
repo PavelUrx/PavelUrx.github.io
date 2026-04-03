@@ -1,16 +1,36 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import HeroThreeBackdrop from '../components/HeroThreeBackdrop.vue'
-import { FOCUS_ITEMS } from '@/content/focusItems'
-import { TIMELINE_ENTRIES } from '@/content/timelineEntries'
+import HrOptionsPanel from '../components/HrOptionsPanel.vue'
+import { useSiteLocale } from '@/composables/useSiteLocale'
+import { getFocusItems } from '@/content/focusItems'
+import { getTimelineEntries } from '@/content/timelineEntries'
 import type { FocusArea, TimelineEntry, TimelineKind } from '@/content/types'
 
-const TIMELINE_FILTERS: { kind: TimelineKind; label: string }[] = [
-  { kind: 'github', label: 'GitHub projects' },
-  { kind: 'education', label: 'Education' },
-  { kind: 'employment', label: 'Jobs' },
-  { kind: 'contract', label: 'Contracts / entrepreneur' },
-]
+const { locale, setLocale, ui } = useSiteLocale()
+
+const dateLocaleTag = computed(() => (locale.value === 'cs' ? 'cs-CZ' : 'en-GB'))
+
+const timelineFilters = computed((): { kind: TimelineKind; label: string }[] => {
+  const f = ui.value.timeline.filters
+  return [
+    { kind: 'github', label: f.github },
+    { kind: 'education', label: f.education },
+    { kind: 'employment', label: f.employment },
+    { kind: 'contract', label: f.contract },
+  ]
+})
+
+const focusFilters = computed((): { area: FocusArea; label: string }[] => {
+  const f = ui.value.focus.filters
+  return [
+    { area: 'backend', label: f.backend },
+    { area: 'frontend', label: f.frontend },
+    { area: 'networking', label: f.networking },
+    { area: 'devops', label: f.devops },
+    { area: 'data', label: f.data },
+  ]
+})
 
 function parseMonth(s: string): number {
   const [y, m] = s.split('-').map((x) => Number(x))
@@ -25,12 +45,12 @@ function endSortTime(e: TimelineEntry): number {
 function formatMonthLabel(ym: string): string {
   const [y, mo] = ym.split('-').map((x) => Number(x))
   const d = new Date(y!, mo! - 1, 1)
-  return d.toLocaleDateString(undefined, { month: 'short', year: 'numeric' })
+  return d.toLocaleDateString(dateLocaleTag.value, { month: 'short', year: 'numeric' })
 }
 
 function formatRange(e: TimelineEntry): string {
   const a = formatMonthLabel(e.start)
-  const b = e.end ? formatMonthLabel(e.end) : 'Present'
+  const b = e.end ? formatMonthLabel(e.end) : ui.value.timeline.present
   return `${a} — ${b}`
 }
 
@@ -39,14 +59,6 @@ function bucketYear(e: TimelineEntry): number {
   if (e.end) return Number(e.end.split('-')[0])
   return new Date().getFullYear()
 }
-
-const FOCUS_FILTERS: { area: FocusArea; label: string }[] = [
-  { area: 'backend', label: 'Back-end' },
-  { area: 'frontend', label: 'Front-end' },
-  { area: 'networking', label: 'Networking' },
-  { area: 'devops', label: 'DevOps & infra' },
-  { area: 'data', label: 'Data' },
-]
 
 /** When empty, every kind is shown; otherwise OR across selected kinds. */
 const activeFilterKinds = ref<Set<TimelineKind>>(new Set())
@@ -58,8 +70,16 @@ function toggleFilter(kind: TimelineKind) {
   activeFilterKinds.value = next
 }
 
-const kindLabel = (kind: TimelineKind) =>
-  TIMELINE_FILTERS.find((x) => x.kind === kind)?.label ?? kind
+function kindLabel(kind: TimelineKind): string {
+  const f = ui.value.timeline.filters
+  const map: Record<TimelineKind, string> = {
+    github: f.github,
+    education: f.education,
+    employment: f.employment,
+    contract: f.contract,
+  }
+  return map[kind] ?? kind
+}
 
 /** Focus: no chip selected → show all; OR across selected areas. */
 const activeFocusAreas = ref<Set<FocusArea>>(new Set())
@@ -71,15 +91,19 @@ function toggleFocusFilter(area: FocusArea) {
   activeFocusAreas.value = next
 }
 
+const focusItems = computed(() => getFocusItems(locale.value))
+
 const visibleFocusItems = computed(() => {
-  if (activeFocusAreas.value.size === 0) return FOCUS_ITEMS
-  return FOCUS_ITEMS.filter((item) =>
+  if (activeFocusAreas.value.size === 0) return focusItems.value
+  return focusItems.value.filter((item) =>
     item.areas.some((a) => activeFocusAreas.value.has(a)),
   )
 })
 
+const timelineEntries = computed(() => getTimelineEntries(locale.value))
+
 const visibleTimeline = computed(() => {
-  let list = [...TIMELINE_ENTRIES]
+  let list = [...timelineEntries.value]
   if (activeFilterKinds.value.size > 0) {
     list = list.filter((e) => activeFilterKinds.value.has(e.kind))
   }
@@ -109,6 +133,32 @@ const groupedTimeline = computed((): YearCluster[] => {
 const timelineBoardEl = ref<HTMLElement | null>(null)
 let boardIo: IntersectionObserver | null = null
 let rowIo: IntersectionObserver | null = null
+
+const detailModalEntry = ref<TimelineEntry | null>(null)
+const modalCloseBtnRef = ref<HTMLButtonElement | null>(null)
+let detailModalTrigger: HTMLElement | null = null
+
+function openTimelineDetail(entry: TimelineEntry, ev: MouseEvent) {
+  detailModalTrigger = ev.currentTarget instanceof HTMLElement ? ev.currentTarget : null
+  detailModalEntry.value = entry
+  document.body.style.overflow = 'hidden'
+  void nextTick(() => modalCloseBtnRef.value?.focus())
+}
+
+function closeTimelineDetail() {
+  if (!detailModalEntry.value) return
+  detailModalEntry.value = null
+  document.body.style.overflow = ''
+  const el = detailModalTrigger
+  detailModalTrigger = null
+  void nextTick(() => el?.focus())
+}
+
+function onDocKeydown(ev: KeyboardEvent) {
+  if (ev.key !== 'Escape' || !detailModalEntry.value) return
+  ev.preventDefault()
+  closeTimelineDetail()
+}
 
 function disconnectTimelineObservers() {
   boardIo?.disconnect()
@@ -172,43 +222,83 @@ watch(groupedTimeline, () => {
 }, { flush: 'post' })
 
 onMounted(() => {
+  window.addEventListener('keydown', onDocKeydown)
   void nextTick(() => {
     bindTimelineReveal()
   })
 })
 
 onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onDocKeydown)
+  document.body.style.overflow = ''
   disconnectTimelineObservers()
 })
 </script>
 
 <template>
   <main class="landing">
-    <div class="backdrop-layer" aria-hidden="true">
-      <HeroThreeBackdrop />
+    <div class="backdrop-layer">
+      <HeroThreeBackdrop
+        :pause-label="ui.backdrop.pause"
+        :play-label="ui.backdrop.play"
+        :hint-label="ui.backdrop.hint"
+        :ariaPause="ui.backdrop.ariaPause"
+        :ariaResume="ui.backdrop.ariaResume"
+      >
+        <template #controls>
+          <div class="backdrop-controls-cluster">
+            <HrOptionsPanel />
+            <div
+              class="lang-switch"
+              role="group"
+              :aria-label="ui.lang.ariaSwitcher"
+            >
+              <button
+                type="button"
+                class="lang-switch__btn"
+                :class="{ 'lang-switch__btn--active': locale === 'en' }"
+                :aria-pressed="locale === 'en'"
+                :aria-label="ui.lang.enLabel"
+                @click="setLocale('en')"
+              >
+                <span class="lang-switch__flag" aria-hidden="true">🇬🇧</span>
+              </button>
+              <button
+                type="button"
+                class="lang-switch__btn"
+                :class="{ 'lang-switch__btn--active': locale === 'cs' }"
+                :aria-pressed="locale === 'cs'"
+                :aria-label="ui.lang.csLabel"
+                @click="setLocale('cs')"
+              >
+                <span class="lang-switch__flag" aria-hidden="true">🇨🇿</span>
+              </button>
+            </div>
+          </div>
+        </template>
+      </HeroThreeBackdrop>
     </div>
 
-    <section class="hero" aria-label="Introduction">
-      <h1 class="title">Pavel Urx</h1>
-      <p class="role">[Your role — e.g. Full-stack developer]</p>
+    <section class="hero" :aria-label="ui.hero.ariaIntroduction">
+      <h1 class="title">{{ ui.hero.name }}</h1>
+      <p class="role">{{ ui.hero.role }}</p>
       <p class="tagline">
-        [One line: what you build, who you help, or the problems you like solving.]
+        {{ ui.hero.tagline }}
       </p>
     </section>
 
     <div class="content">
       <section class="block" aria-labelledby="about-heading">
-        <h2 id="about-heading" class="block-heading">About</h2>
+        <h2 id="about-heading" class="block-heading">{{ ui.about.heading }}</h2>
         <p class="block-text">
-          [2–3 sentences: background, what you care about in engineering or design, and what you’re
-          looking for next — clients, collaborators, or a full-time role.]
+          {{ ui.about.body }}
         </p>
       </section>
 
       <section class="block" aria-labelledby="timeline-heading">
-        <h2 id="timeline-heading" class="block-heading">Timeline</h2>
+        <h2 id="timeline-heading" class="block-heading">{{ ui.timeline.heading }}</h2>
         <p class="timeline-hint" id="timeline-filters-label">
-          Narrow by category — leave all off to show everything.
+          {{ ui.timeline.hint }}
         </p>
         <div
           class="timeline-filters"
@@ -216,7 +306,7 @@ onBeforeUnmount(() => {
           aria-labelledby="timeline-filters-label"
         >
           <button
-            v-for="f in TIMELINE_FILTERS"
+            v-for="f in timelineFilters"
             :key="f.kind"
             type="button"
             class="filter-chip"
@@ -232,13 +322,13 @@ onBeforeUnmount(() => {
         <div ref="timelineBoardEl" class="timeline-board" aria-live="polite">
           <div class="timeline-scale" aria-hidden="true">
             <span class="timeline-scale-mark" />
-            <span class="timeline-scale-text">Temporal scale</span>
-            <span class="timeline-scale-unit">years · newest ↑</span>
+            <span class="timeline-scale-text">{{ ui.timeline.scaleTitle }}</span>
+            <span class="timeline-scale-unit">{{ ui.timeline.scaleUnit }}</span>
             <span class="timeline-scale-mark timeline-scale-mark--end" />
           </div>
 
           <p v-if="visibleTimeline.length === 0" class="timeline-empty">
-            No entries for this filter. Toggle a category or clear filters.
+            {{ ui.timeline.empty }}
           </p>
 
           <div v-else class="timeline-shell">
@@ -263,7 +353,7 @@ onBeforeUnmount(() => {
                   <time class="timeline-year-display" :datetime="String(cluster.year)">
                     {{ cluster.year }}
                   </time>
-                  <span class="timeline-year-unit">yr</span>
+                  <span class="timeline-year-unit">{{ ui.timeline.yearSuffix }}</span>
                   <span class="timeline-year-glitch" aria-hidden="true">{{ cluster.year }}</span>
                 </header>
 
@@ -295,13 +385,14 @@ onBeforeUnmount(() => {
                       <p class="timeline-card-context">{{ entry.context }}</p>
                       <p class="timeline-card-summary">{{ entry.summary }}</p>
 
-                      <details
+                      <button
                         v-if="entry.details"
-                        class="timeline-card-details"
+                        type="button"
+                        class="timeline-card-open-details"
+                        @click="openTimelineDetail(entry, $event)"
                       >
-                        <summary class="timeline-card-details-toggle">More detail</summary>
-                        <div class="timeline-card-details-body">{{ entry.details }}</div>
-                      </details>
+                        {{ ui.timeline.openDetails }}
+                      </button>
                     </div>
                   </li>
                 </ul>
@@ -312,9 +403,9 @@ onBeforeUnmount(() => {
       </section>
 
       <section class="block" aria-labelledby="focus-heading">
-        <h2 id="focus-heading" class="block-heading">Focus</h2>
+        <h2 id="focus-heading" class="block-heading">{{ ui.focus.heading }}</h2>
         <p class="timeline-hint" id="focus-filters-label">
-          Narrow by area — leave all off to show everything.
+          {{ ui.focus.hint }}
         </p>
         <div
           class="timeline-filters"
@@ -322,7 +413,7 @@ onBeforeUnmount(() => {
           aria-labelledby="focus-filters-label"
         >
           <button
-            v-for="f in FOCUS_FILTERS"
+            v-for="f in focusFilters"
             :key="f.area"
             type="button"
             class="filter-chip"
@@ -336,9 +427,9 @@ onBeforeUnmount(() => {
         </div>
 
         <p v-if="visibleFocusItems.length === 0" class="timeline-empty" aria-live="polite">
-          No skills match this filter. Turn off a category to see more.
+          {{ ui.focus.empty }}
         </p>
-        <ul v-else class="focus-tech" aria-label="Skills and technologies">
+        <ul v-else class="focus-tech" :aria-label="ui.focus.skillsAria">
           <li
             v-for="(item, i) in visibleFocusItems"
             :key="`${item.label}-${i}`"
@@ -351,27 +442,73 @@ onBeforeUnmount(() => {
       </section>
 
       <section class="block" aria-labelledby="contact-heading">
-        <h2 id="contact-heading" class="block-heading">Contact</h2>
+        <h2 id="contact-heading" class="block-heading">{{ ui.contact.heading }}</h2>
         <ul class="contact-list">
           <li>
-            <span class="contact-label">Email</span>
-            <span class="contact-value">[you@example.com]</span>
+            <span class="contact-label">{{ ui.contact.email }}</span>
+            <span class="contact-value">{{ ui.contactValues.email }}</span>
           </li>
           <li>
-            <span class="contact-label">GitHub</span>
-            <span class="contact-value">[github.com/yourusername]</span>
+            <span class="contact-label">{{ ui.contact.github }}</span>
+            <span class="contact-value">{{ ui.contactValues.github }}</span>
           </li>
           <li>
-            <span class="contact-label">LinkedIn</span>
-            <span class="contact-value">[linkedin.com/in/yourprofile]</span>
+            <span class="contact-label">{{ ui.contact.linkedin }}</span>
+            <span class="contact-value">{{ ui.contactValues.linkedin }}</span>
           </li>
           <li>
-            <span class="contact-label">Location</span>
-            <span class="contact-value">[City, country — or Remote / Hybrid]</span>
+            <span class="contact-label">{{ ui.contact.location }}</span>
+            <span class="contact-value">{{ ui.contactValues.location }}</span>
           </li>
         </ul>
       </section>
     </div>
+
+    <Teleport to="body">
+      <div
+        v-if="detailModalEntry"
+        class="timeline-modal-scrim"
+        role="presentation"
+        @click.self="closeTimelineDetail"
+      >
+        <div
+          class="timeline-modal-panel"
+          :data-kind="detailModalEntry.kind"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="timeline-detail-modal-title"
+          @click.stop
+        >
+          <button
+            ref="modalCloseBtnRef"
+            type="button"
+            class="timeline-modal-close"
+            @click="closeTimelineDetail"
+          >
+            {{ ui.timeline.modalClose }}
+          </button>
+
+          <p class="timeline-modal-kicker">
+            <span class="timeline-modal-kind">{{ kindLabel(detailModalEntry.kind) }}</span>
+            <span class="timeline-modal-span">{{ formatRange(detailModalEntry) }}</span>
+          </p>
+          <h2 id="timeline-detail-modal-title" class="timeline-modal-title">
+            <a
+              v-if="detailModalEntry.href"
+              :href="detailModalEntry.href"
+              class="timeline-modal-title-link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ detailModalEntry.title }}
+            </a>
+            <template v-else>{{ detailModalEntry.title }}</template>
+          </h2>
+          <p class="timeline-modal-context">{{ detailModalEntry.context }}</p>
+          <div class="timeline-modal-body">{{ detailModalEntry.details }}</div>
+        </div>
+      </div>
+    </Teleport>
   </main>
 </template>
 
@@ -385,6 +522,59 @@ onBeforeUnmount(() => {
   align-items: stretch;
   text-align: center;
   overflow-x: hidden;
+}
+
+.backdrop-controls-cluster {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.35rem 0.45rem;
+  pointer-events: auto;
+}
+
+.lang-switch {
+  display: flex;
+  gap: 0.3rem;
+  pointer-events: auto;
+}
+
+.lang-switch__btn {
+  margin: 0;
+  padding: 0.32rem 0.4rem;
+  line-height: 1;
+  font-size: 1.05rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(12, 235, 255, 0.15);
+  background: rgba(5, 8, 20, 0.65);
+  border: 1px solid rgba(12, 235, 255, 0.22);
+  border-radius: 8px;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.lang-switch__btn:hover {
+  border-color: rgba(12, 235, 255, 0.45);
+}
+
+.lang-switch__btn:focus-visible {
+  outline: 2px solid rgba(12, 235, 255, 0.55);
+  outline-offset: 2px;
+}
+
+.lang-switch__btn--active {
+  border-color: rgba(12, 235, 255, 0.55);
+  box-shadow: 0 0 18px rgba(12, 235, 255, 0.2);
+  background: rgba(12, 235, 255, 0.08);
+}
+
+.lang-switch__flag {
+  display: block;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
 }
 
 .backdrop-layer {
@@ -419,6 +609,14 @@ onBeforeUnmount(() => {
   justify-content: center;
   gap: clamp(0.45rem, 1.8vh, 1rem);
   padding: clamp(1rem, 5vmin, 2.5rem);
+  /* Let taps reach fixed backdrop controls (teleported) in empty hero area; text stays selectable. */
+  pointer-events: none;
+}
+
+.hero .title,
+.hero .role,
+.hero .tagline {
+  pointer-events: auto;
 }
 
 .content {
@@ -573,6 +771,8 @@ onBeforeUnmount(() => {
   border: 1px solid rgba(12, 235, 255, 0.22);
   border-radius: 6px;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(12, 235, 255, 0.12);
   transition:
     border-color 0.15s ease,
     background 0.15s ease,
@@ -1096,54 +1296,197 @@ onBeforeUnmount(() => {
   text-shadow: 0 1px 10px rgba(5, 5, 20, 0.7);
 }
 
-.timeline-card-details {
-  margin-top: 0.65rem;
-  padding-top: 0.55rem;
-  border-top: 1px solid color-mix(in srgb, var(--card-accent) 18%, rgba(12, 235, 255, 0.08));
+.timeline-card-open-details {
+  margin-top: 0.6rem;
+  padding: 0.42rem 0.72rem;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(12, 235, 255, 0.12);
+  color: color-mix(in srgb, var(--card-accent) 52%, rgba(236, 244, 255, 0.95));
+  background: color-mix(in srgb, var(--card-accent) 10%, rgba(5, 8, 22, 0.72));
+  border: 1px solid color-mix(in srgb, var(--card-accent) 32%, rgba(12, 235, 255, 0.12));
+  border-radius: 6px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
-.timeline-card-details-toggle {
+.timeline-card-open-details:hover {
+  border-color: color-mix(in srgb, var(--card-accent) 48%, rgba(12, 235, 255, 0.2));
+  background: color-mix(in srgb, var(--card-accent) 16%, rgba(5, 8, 22, 0.82));
+}
+
+.timeline-card-open-details:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--card-accent) 55%, rgba(12, 235, 255, 0.35));
+  outline-offset: 2px;
+}
+
+.timeline-modal-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.75rem, 3vmin, 1.5rem);
+  background: rgba(2, 4, 14, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+@media (max-width: 1024px), ((hover: none) and (pointer: coarse)) {
+  .timeline-modal-scrim {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(2, 4, 14, 0.94);
+  }
+}
+
+.timeline-modal-panel {
   position: relative;
+  --modal-accent: var(--neo-blue);
+  width: min(100%, 34rem);
+  max-height: min(88vh, 44rem);
+  overflow: auto;
+  padding: clamp(1.05rem, 3.2vmin, 1.45rem) clamp(1rem, 3vmin, 1.35rem) clamp(1.1rem, 3vmin, 1.4rem);
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--modal-accent) 35%, rgba(12, 235, 255, 0.12));
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--modal-accent) 12%, rgba(14, 18, 38)),
+    rgba(5, 7, 18, 0.96)
+  );
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.55),
+    0 0 42px color-mix(in srgb, var(--modal-accent) 14%, transparent);
+  text-align: left;
+}
+
+.timeline-modal-panel[data-kind='github'] {
+  --modal-accent: var(--neo-blue);
+}
+
+.timeline-modal-panel[data-kind='education'] {
+  --modal-accent: var(--neo-violet);
+}
+
+.timeline-modal-panel[data-kind='employment'] {
+  --modal-accent: rgb(130, 220, 255);
+}
+
+.timeline-modal-panel[data-kind='contract'] {
+  --modal-accent: var(--neo-pink);
+}
+
+.timeline-modal-close {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  margin: 0;
+  padding: 0.35rem 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   cursor: pointer;
-  padding-left: 1.05rem;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(12, 235, 255, 0.15);
+  color: rgba(210, 225, 255, 0.9);
+  background: rgba(5, 8, 22, 0.72);
+  border: 1px solid rgba(12, 235, 255, 0.28);
+  border-radius: 6px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.timeline-modal-close:hover {
+  border-color: rgba(12, 235, 255, 0.45);
+  background: rgba(12, 235, 255, 0.08);
+}
+
+.timeline-modal-close:focus-visible {
+  outline: 2px solid rgba(12, 235, 255, 0.55);
+  outline-offset: 2px;
+}
+
+.timeline-modal-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.65rem;
+  margin: 0 0 0.45rem;
+  padding-right: 4.5rem;
+}
+
+.timeline-modal-kind {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--modal-accent) 70%, white);
+}
+
+.timeline-modal-span {
   font-family: var(--font-mono);
   font-size: 0.66rem;
+  letter-spacing: 0.03em;
+  color: rgba(175, 200, 255, 0.5);
+  padding: 0.2rem 0.45rem;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--modal-accent) 22%, rgba(12, 235, 255, 0.1));
+  background: color-mix(in srgb, var(--modal-accent) 5%, rgba(5, 8, 22, 0.55));
+}
+
+.timeline-modal-title {
+  margin: 0 0 0.45rem;
+  padding-right: 4.25rem;
+  font-family: var(--font-mono);
+  font-size: clamp(0.95rem, 2.8vmin, 1.12rem);
   font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--card-accent) 50%, rgba(210, 225, 255, 0.85));
-  list-style: none;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+  color: var(--color-heading);
 }
 
-.timeline-card-details-toggle::-webkit-details-marker {
-  display: none;
+.timeline-modal-title-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--modal-accent) 45%, transparent);
+  text-underline-offset: 3px;
 }
 
-.timeline-card-details-toggle::marker {
-  content: '';
+.timeline-modal-title-link:hover {
+  text-decoration-color: color-mix(in srgb, var(--modal-accent) 85%, white);
 }
 
-.timeline-card-details-toggle::before {
-  content: '▸';
-  position: absolute;
-  left: 0;
-  top: 0.05em;
-  opacity: 0.7;
-  transition: transform 0.2s ease;
+.timeline-modal-context {
+  margin: 0 0 0.85rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  color: rgba(175, 200, 255, 0.55);
 }
 
-.timeline-card-details[open] .timeline-card-details-toggle::before {
-  transform: rotate(90deg);
-}
-
-.timeline-card-details-body {
-  margin: 0.55rem 0 0;
-  padding-left: 0.15rem;
-  font-size: 0.82rem;
-  line-height: 1.62;
-  color: rgba(185, 205, 255, 0.82);
+.timeline-modal-body {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: rgba(195, 215, 255, 0.9);
   white-space: pre-wrap;
-  text-shadow: 0 1px 10px rgba(5, 5, 20, 0.65);
+  text-shadow: 0 1px 12px rgba(5, 5, 20, 0.65);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline-modal-scrim {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
 
 .timeline-link {

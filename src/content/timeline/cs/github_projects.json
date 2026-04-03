@@ -1,0 +1,24 @@
+[
+  {
+    "id": "gh-os-current-placeholder",
+    "kind": "github",
+    "start": "2023-01",
+    "end": null,
+    "title": "[Název open source nebo veřejného repozitáře]",
+    "context": "GitHub",
+    "summary": "[Problém, technologie, hvězdy/uživatelé — zástupný text.]",
+    "href": "https://github.com/[you]/[repo]",
+    "details": "Motivace projektu, poznámky k architektuře, jak ho používají ostatní, plán do budoucna.\n\nOdkaz zůstává v nadpisu; tento blok je pro delší popis."
+  },
+  {
+    "id": "gh-older-placeholder",
+    "kind": "github",
+    "start": "2019-03",
+    "end": "2021-11",
+    "title": "[Starší veřejný projekt]",
+    "context": "GitHub",
+    "summary": "[Krátký popis — zástupný text.]",
+    "href": "https://github.com/[you]/[repo]",
+    "details": "Co byste dnes udělali jinak; volby stacku; stav údržby."
+  }
+]

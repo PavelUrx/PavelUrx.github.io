@@ -1,0 +1,82 @@
+{
+  "hero": {
+    "ariaIntroduction": "Úvod",
+    "name": "Pavel Urx",
+    "role": "[Vaše role — např. full-stack vývojář]",
+    "tagline": "[Jedna věta: co tvoříte, komu pomáháte nebo jaké problémy vás baví řešit.]"
+  },
+  "about": {
+    "heading": "O mně",
+    "body": "[2–3 věty: pozadí, co vám na inženýrství nebo designu záleží a co hledáte dál — klienty, spolupracovníky nebo full-time pozici.]"
+  },
+  "timeline": {
+    "heading": "Časová osa",
+    "hint": "Zužte podle kategorie — nic nevybírejte, aby se zobrazilo vše.",
+    "filters": {
+      "github": "Projekty na GitHubu",
+      "education": "Vzdělání",
+      "employment": "Zaměstnání",
+      "contract": "Kontrakty / podnikání"
+    },
+    "scaleTitle": "Časová škála",
+    "scaleUnit": "roky · nejnovější ↑",
+    "empty": "Pro tento filtr nejsou žádné záznamy. Přepněte kategorii nebo zrušte filtry.",
+    "present": "dosud",
+    "openDetails": "Zobrazit celý popis",
+    "modalClose": "Zavřít",
+    "yearSuffix": "r."
+  },
+  "focus": {
+    "heading": "Zaměření",
+    "hint": "Zužte podle oblasti — nic nevybírejte, aby se zobrazilo vše.",
+    "filters": {
+      "backend": "Back-end",
+      "frontend": "Front-end",
+      "networking": "Sítě",
+      "devops": "DevOps a infra",
+      "data": "Data"
+    },
+    "empty": "Žádná dovednost neodpovídá filtru. Vypněte kategorii a uvidíte víc.",
+    "skillsAria": "Dovednosti a technologie"
+  },
+  "contact": {
+    "heading": "Kontakt",
+    "email": "E-mail",
+    "github": "GitHub",
+    "linkedin": "LinkedIn",
+    "location": "Lokalita"
+  },
+  "contactValues": {
+    "email": "[vy@example.com]",
+    "github": "[github.com/vas-ucet]",
+    "linkedin": "[linkedin.com/in/vas-profil]",
+    "location": "[Město, země — nebo Remote / Hybrid]"
+  },
+  "backdrop": {
+    "pause": "Pauza",
+    "play": "Přehrát",
+    "hint": "animace",
+    "ariaPause": "Pozastavit animované pozadí",
+    "ariaResume": "Obnovit animované pozadí"
+  },
+  "lang": {
+    "enLabel": "English",
+    "csLabel": "Čeština",
+    "ariaSwitcher": "Jazyk"
+  },
+  "hr": {
+    "toggleAria": "Možnosti pro HR",
+    "panelTitle": "Možnosti pro HR",
+    "cvLanguage": "Jazyk životopisu",
+    "printerFriendly": "Šetrný tisk",
+    "printerFriendlyHint": "Černý text a minimum stylů kvůli úspoře barvy a toneru.",
+    "exportCv": "Export / tisk PDF",
+    "exportAria": "Otevřít životopis v novém panelu k tisku nebo uložení jako PDF"
+  },
+  "cv": {
+    "documentTitleSuffix": "Životopis",
+    "backToSite": "Zpět na web",
+    "printOrSavePdf": "Tisk / Uložit jako PDF",
+    "screenIntro": "V dialogu tisku v prohlížeči zvolte „Uložit jako PDF“, pokud chcete soubor."
+  }
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "job-current-placeholder",
+    "kind": "employment",
+    "start": "2024-03",
+    "end": null,
+    "title": "[Aktuální pozice]",
+    "context": "[Firma · lokalita nebo remote]",
+    "summary": "[Co dodáváte, stack, velikost týmu nebo doména — jedna až dvě věty.]",
+    "details": "Volitelně: struktura týmu, významné releasy, metriky, na které jste hrdí, nástroje, které denně používáte.\n\nBuďte struční a féroví; můžete zrcadlit CV nebo LinkedIn s větší barvou."
+  },
+  {
+    "id": "job-previous-placeholder",
+    "kind": "employment",
+    "start": "2020-09",
+    "end": "2022-05",
+    "title": "[Předchozí pozice]",
+    "context": "[Firma]",
+    "summary": "[Odpovědnost, dopad — zástupný text.]",
+    "details": "Co jste vlastnili end-to-end, povýšení, ponaučení, proč jste odešli (volitelně)."
+  }
+]

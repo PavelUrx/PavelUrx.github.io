@@ -9,7 +9,6 @@
     "summary": "[Problem, tech, stars/users if it helps — placeholder.]",
     "href": "https://github.com/[you]/[repo]",
     "details": "Motivation for the project, architecture notes, how others use it, roadmap.\n\nLink above stays on the title; this block is for narrative."
-
   },
   {
     "id": "gh-older-placeholder",
@@ -21,6 +20,5 @@
     "summary": "[Short description — placeholder.]",
     "href": "https://github.com/[you]/[repo]",
     "details": "What you would improve with hindsight; stack choices; maintenance status."
-
   }
 ]

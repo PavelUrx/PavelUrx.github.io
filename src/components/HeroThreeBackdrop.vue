@@ -2,6 +2,14 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { Color, InstancedMesh, SpotLight } from 'three'
 
+defineProps<{
+  pauseLabel: string
+  playLabel: string
+  hintLabel: string
+  ariaPause: string
+  ariaResume: string
+}>()
+
 const host = ref<HTMLElement | null>(null)
 
 /** User toggle: stop the render loop (saves GPU); distinct from prefers-reduced-motion. */
@@ -393,16 +401,24 @@ onBeforeUnmount(() => {
 <template>
   <div class="hero-backdrop-root">
     <div ref="host" class="hero-canvas-host" aria-hidden="true" />
-    <button
-      type="button"
-      class="backdrop-pause-btn"
-      :aria-pressed="backdropPaused"
-      :aria-label="backdropPaused ? 'Resume animated background' : 'Pause animated background'"
-      @click="backdropPaused = !backdropPaused"
-    >
-      <span class="backdrop-pause-btn__text" aria-hidden="true">{{ backdropPaused ? 'Play' : 'Pause' }}</span>
-      <span class="backdrop-pause-btn__hint">animation</span>
-    </button>
+    <!-- Fixed controls must sit above .hero / .content (z-index 2) or taps never reach them on touch devices. -->
+    <Teleport to="body">
+      <div class="backdrop-toolbar">
+        <div v-if="$slots.controls" class="backdrop-toolbar__extras">
+          <slot name="controls" />
+        </div>
+        <button
+          type="button"
+          class="backdrop-pause-btn"
+          :aria-pressed="backdropPaused"
+          :aria-label="backdropPaused ? ariaResume : ariaPause"
+          @click="backdropPaused = !backdropPaused"
+        >
+          <span class="backdrop-pause-btn__text" aria-hidden="true">{{ backdropPaused ? playLabel : pauseLabel }}</span>
+          <span class="backdrop-pause-btn__hint">{{ hintLabel }}</span>
+        </button>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -427,11 +443,29 @@ onBeforeUnmount(() => {
   height: 100%;
 }
 
+.backdrop-toolbar {
+  position: fixed;
+  right: max(clamp(0.65rem, 3vmin, 1.1rem), env(safe-area-inset-right, 0px));
+  bottom: max(clamp(0.65rem, 3vmin, 1.1rem), env(safe-area-inset-bottom, 0px));
+  z-index: 50;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: clamp(0.35rem, 1.5vmin, 0.55rem);
+  max-width: calc(100% - clamp(1.2rem, 5vmin, 2rem));
+  pointer-events: none;
+}
+
+.backdrop-toolbar__extras {
+  display: flex;
+  align-items: flex-end;
+  pointer-events: auto;
+}
+
 .backdrop-pause-btn {
-  position: absolute;
-  right: clamp(0.65rem, 3vmin, 1.1rem);
-  bottom: clamp(0.65rem, 3vmin, 1.1rem);
-  z-index: 2;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -445,6 +479,8 @@ onBeforeUnmount(() => {
   border: 1px solid rgba(12, 235, 255, 0.28);
   border-radius: 6px;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(12, 235, 255, 0.15);
   pointer-events: auto;
   box-shadow:
     0 4px 18px rgba(0, 0, 0, 0.35),

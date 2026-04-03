@@ -1,9 +1,13 @@
-# Build Vite app and publish to GitHub Pages (enable: Settings → Pages → Source: GitHub Actions).
+# Build Vite app and publish to GitHub Pages (Settings → Pages → Source: GitHub Actions).
 name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [master, main]
+    branches:
+      - main
+      - master
+      - portfolio-revisit
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -11,7 +15,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -25,9 +29,8 @@ jobs:
           node-version: '22'
           cache: npm
 
-      # `npm ci` fails if the lockfile was produced on another OS and omits
-      # optional/native deps (e.g. @emnapi/* on Linux). `npm install` resolves
-      # the tree on the runner and matches package.json + lockfile semantics.
+      # Avoid `npm ci` when the lockfile was generated on another OS and omits
+      # optional native deps. Vite 7.x avoids Rolldown bindings that broke Linux CI on Vite 8.
       - run: npm install --no-audit --no-fund
       - run: npm run build
 

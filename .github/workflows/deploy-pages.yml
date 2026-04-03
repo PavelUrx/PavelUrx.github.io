@@ -25,7 +25,10 @@ jobs:
           node-version: '22'
           cache: npm
 
-      - run: npm ci
+      # `npm ci` fails if the lockfile was produced on another OS and omits
+      # optional/native deps (e.g. @emnapi/* on Linux). `npm install` resolves
+      # the tree on the runner and matches package.json + lockfile semantics.
+      - run: npm install --no-audit --no-fund
       - run: npm run build
 
       - uses: actions/upload-pages-artifact@v3
